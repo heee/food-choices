@@ -35,9 +35,10 @@ html.lk{overflow:hidden}
 body{font:16px/1.45 var(--fb);overflow-x:clip;-webkit-tap-highlight-color:transparent}
 button,input,select,textarea{font:inherit;color:inherit}
 button,[role=button]{cursor:pointer}
-/* bottom clearance: the safe area as a home-screen app; on a phone outside it (e.g. inside a viewer app whose own bottom panel covers the page), a fixed 120px */
+/* bottom clearance: the safe area; only when shown framed inside another app on a phone (e.g. a viewer whose own bottom panel covers the page), a fixed 120px */
 :root{--chrome:0px;--botm:max(env(safe-area-inset-bottom,0px),var(--chrome))}
-@media (pointer:coarse){html.inapp{--chrome:120px}}
+@media (pointer:coarse){html.framed.inapp{--chrome:120px}}
+[hidden]{display:none!important}
 .app{max-width:460px;margin:0 auto;min-height:100vh;min-height:100dvh;background:var(--sheet)}
 .band{background:var(--band);color:var(--bink);padding:max(14px,env(safe-area-inset-top)) max(24px,env(safe-area-inset-right)) 44px max(24px,env(safe-area-inset-left))}
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px}
@@ -228,6 +229,7 @@ html.lk #toast{bottom:calc(var(--botm) + 160px)}
 :focus-visible{outline:3px solid var(--pri);outline-offset:2px}
 #scrim{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:70}
 #sheet{position:fixed;left:0;right:0;bottom:0;z-index:71;display:flex;justify-content:center}
+#sheet[hidden]{display:none}
 #sheetIn{width:100%;max-width:460px;background:var(--sheet);color:var(--ink);border-radius:14px 14px 0 0;padding:20px max(18px,env(safe-area-inset-left)) calc(var(--botm) + 20px);max-height:88vh;max-height:88dvh;overflow-y:auto;box-shadow:0 -8px 30px rgba(0,0,0,.2)}
 #sheetIn h2{font:500 18px/1.2 var(--fd);letter-spacing:-.01em;margin:0 0 4px}
 .sub{color:var(--mute);margin:0 0 14px;font-size:15px}
