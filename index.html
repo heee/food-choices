@@ -321,6 +321,7 @@ html.lk #toast button{color:#cfe0c8}
       <div class="vh2"><h2>Progress</h2></div>
       <p class="sub2">Your planned meals for the next 7 days against your daily targets.</p>
       <button class="setrow" id="openSet"><span><b>Daily targets</b><small id="tsum"></small></span><em>Edit</em></button>
+      <button class="setrow" id="openTodo"><span><b>Todoist</b><small id="tdsum"></small></span><em>Edit</em></button>
       <div class="ptiles" id="ptiles"></div>
       <div id="pdays"></div>
     </section>
@@ -567,7 +568,10 @@ function renderProgress(){
    Authorization header to api.todoist.com, and is never logged or put in a URL. */
 const KT='mealPlanner.todoist.v1',TD='https://api.todoist.com/api/v1/sync';
 let td=load(KT)||{},tdMeta=null;
-function tdSave(){if(td.token)store(KT,td);else{try{localStorage.removeItem(KT)}catch(e){}}}
+function tdSave(){if(td.token)store(KT,td);else{try{localStorage.removeItem(KT)}catch(e){}}tdUI()}
+/* the header settings icon shows only until Todoist is set up, or again after a rejected token */
+function tdUI(){const ok=!!(td.token&&td.project_id&&!td.bad),b=$('#todoSet'),m=$('#tdsum');if(b)b.hidden=ok;
+  if(m)m.textContent=!td.token?'Not set up':td.bad?"Todoist didn't accept the token":td.project_id?(td.project_name||'Project')+(td.section_name?' · '+td.section_name:''):'Pick a project'}
 async function tdSync(form){
   const r=await fetch(TD,{method:'POST',headers:{'Authorization':'Bearer '+td.token,'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(form)});
   if(!r.ok){const e=new Error('http');e.status=r.status;throw e}return r.json()}
@@ -582,8 +586,8 @@ function todoSheet(){
   const body=()=>td.token?`<h2>Todoist</h2><form class="form" id="tdf" onsubmit="return false"><label class="wide">API token<input value="${esc(mask(td.token))}" disabled></label><div class="wide" id="tdSel">${sel()}</div></form><div class="row"><button class="btn" data-tdrm>Remove token</button><button class="btn pri" data-close>Done</button></div>`
     :`<h2>Todoist</h2><form class="form" id="tdf" onsubmit="return false"><label class="wide">API token<input id="tdTok" type="password" autocomplete="off" autocapitalize="off" spellcheck="false"></label></form><div class="row"><button class="btn" data-close>Cancel</button><button class="btn pri" data-tdsave>Save</button></div>`;
   const pick=()=>{const p=$('#tdProj'),x=$('#tdSec');if(!p||!tdMeta)return;const pr=tdMeta.projects.find(q=>q.id===p.value);td.project_id=p.value;td.project_name=pr?pr.name:'';
-    const sx=x&&tdMeta.sections.find(q=>q.id===x.value&&q.project_id===p.value);td.section_id=sx?sx.id:'';tdSave()};
-  const meta=()=>{if(!td.token)return;tdLoadMeta().then(()=>{if($('#tdSel')){$('#tdSel').innerHTML=sel();pick()}}).catch(e=>{const m=$('#tdMsg');if(m)m.textContent=e&&e.status===401||e&&e.status===403?"Todoist didn't accept this token.":"Couldn't reach Todoist."})};
+    const sx=x&&tdMeta.sections.find(q=>q.id===x.value&&q.project_id===p.value);td.section_id=sx?sx.id:'';td.section_name=sx?sx.name:'';tdSave()};
+  const meta=()=>{if(!td.token)return;tdLoadMeta().then(()=>{if(td.bad){delete td.bad;tdSave()}if($('#tdSel')){$('#tdSel').innerHTML=sel();pick()}}).catch(e=>{const m=$('#tdMsg'),bad=e&&(e.status===401||e.status===403);if(bad){td.bad=true;tdSave()}if(m)m.textContent=bad?"Todoist didn't accept this token.":"Couldn't reach Todoist."})};
   const onChg=e=>{if(!tdMeta)return;if(e.target.id==='tdProj'){const ss=tdMeta.sections.filter(x=>x.project_id===e.target.value);$('#tdSec').innerHTML=`<option value="">None</option>`+ss.map(x=>`<option value="${esc(x.id)}">${esc(x.name)}</option>`).join('')}pick()};
   const show=()=>{openSheet(body(),onTap);$('#sheetIn').onchange=onChg};
   const onTap=e=>{
@@ -602,16 +606,16 @@ async function sendTodo(){
     return {type:'item_add',temp_id:'t'+Date.now()+'_'+i,uuid:(crypto.randomUUID?crypto.randomUUID():'u'+Date.now()+'_'+i+'_'+Math.random().toString(36).slice(2)),args:a}});
   try{
     const j=await tdSync({commands:JSON.stringify(cmds)}),ok=cmds.filter(c=>j.sync_status&&j.sync_status[c.uuid]==='ok');
-    ok.forEach(c=>{const it=items[cmds.indexOf(c)];st.sent[it.key]=it.mult});save();renderAll();
+    ok.forEach(c=>{const it=items[cmds.indexOf(c)];st.sent[it.key]=it.mult});if(td.bad){delete td.bad;tdSave()}save();renderAll();
     const where=td.project_name||'Todoist';
     if(ok.length===cmds.length&&cmds.length===items.length)toast(`Added ${ok.length} item${ok.length>1?'s':''} to ${where}`);
     else toast(`Added ${ok.length} of ${items.length} items to ${where}, tap again for the rest`);
   }catch(e){
-    const bad=e&&(e.status===401||e.status===403);
+    const bad=e&&(e.status===401||e.status===403);if(bad){td.bad=true;tdSave()}
     copyText(items.map(x=>x.text).join('\n'),'Copy for Todoist',bad?"Todoist didn't accept the token, copied the list instead":"Couldn't reach Todoist, copied the list instead",bad?"Todoist didn't accept the token. Copy the list instead.":"Couldn't reach Todoist. Copy the list instead.");
   }finally{tdBusy=false;b&&b.classList.remove('busy')}
 }
-function renderAll(){
+function renderAll(){tdUI();
   renderTop();
   document.querySelectorAll('.view').forEach(v=>v.hidden=v.id!=='v-'+st.view);
   document.querySelectorAll('#tabs button').forEach(b=>{const on=b.dataset.view===st.view;b.classList.toggle('on',on);b.setAttribute('aria-current',on?'page':'false')});
@@ -836,6 +840,7 @@ document.addEventListener('click',e=>{
   else if(e.target.closest('#dnext'))stepDay(1);
   else if(e.target.closest('#dlabel'))calSheet(st.day);
   else if(e.target.closest('#openSet'))setSheet();
+  else if(e.target.closest('#openTodo'))todoSheet();
   else if(e.target.closest('#kpill')){const o=['left','planned','target'];st.kmode=o[(o.indexOf(st.kmode||'left')+1)%3];renderTop();save()}
   else if(e.target.closest('#sendTodo'))sendTodo();
   else if(e.target.closest('#todoSet'))todoSheet();
