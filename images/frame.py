@@ -103,7 +103,7 @@ def take(im, box, cx, cy, cw, ch):
     big = Image.fromarray(ext.astype('uint8'))
     base = np.asarray(big.filter(ImageFilter.GaussianBlur(max(pl, pt, pr, pb, 24) * 0.6))).astype(float)
     canvas = base + _linen_texture(im, box, big.size)
-    f = int(min(96, max(24, 0.6 * max(pl, pt, pr, pb))))  # wider feather when the fill is wide, so no visible seam
+    f = int(min(96, max(24, 0.6 * max(pl, pt, pr, pb)))) // 2 * 2  # even, so the MinFilter size below stays odd  # wider feather when the fill is wide, so no visible seam
     mask = np.zeros(ext.shape[:2]); mask[pt:pt + H, pl:pl + W] = 255
     mask = np.asarray(Image.fromarray(mask.astype('uint8')).filter(ImageFilter.MinFilter(f + 1))
                       .filter(ImageFilter.GaussianBlur(f / 2))).astype(float) / 255
