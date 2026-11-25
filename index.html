@@ -265,6 +265,11 @@ html.lk #toast{bottom:calc(var(--botm) + 160px)}
 .ddm [aria-checked=true] .ck{background:var(--pri);border-color:var(--pri)}
 .ddm [aria-checked=true] .ck svg{opacity:1}
 .ddm hr{border:0;border-top:1px solid var(--line);margin:6px 4px}
+.ddm .rd .ck{border:0;background:none!important}.ddm .rd .ck svg{stroke:var(--ink)}
+.hacts{display:flex;align-items:center;gap:4px}
+.ibtn{width:40px;height:40px;display:grid;place-items:center;padding:0;border:0;border-radius:20px;background:none;color:var(--ink)}
+.ibtn:active{background:var(--soft)}
+.ibtn svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 .row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:14px}
 .form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .form .wide{grid-column:1/-1}
@@ -303,11 +308,9 @@ html.lk #toast button{color:#cfe0c8}
       
     </section>
     <section class="view" id="v-shopping" hidden>
-      <div class="vh2"><h2>Shopping</h2><button class="btn pri sm" id="exportShop">Copy for Todoist</button></div>
-      <div class="chips" id="shopr"></div>
+      <div class="vh2"><h2>Shopping</h2><div class="hacts"><div class="ddw"><button class="dd" id="shopdd" aria-haspopup="true" aria-expanded="false" aria-controls="shopddm"><span id="shopddT">7 days</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5"/></svg></button><div class="ddm" id="shopddm" role="menu" aria-label="Shopping range" hidden></div></div><button class="ibtn" id="exportShop" aria-label="Copy for Todoist" title="Copy for Todoist"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8.5" y="8.5" width="11.5" height="11.5" rx="2.2"/><path d="M15.5 8.5V6.2A2.2 2.2 0 0 0 13.3 4H6.2A2.2 2.2 0 0 0 4 6.2v7.1a2.2 2.2 0 0 0 2.2 2.2h2.3"/></svg></button></div></div>
       <p class="sub2" id="shopsum"></p>
       <div id="shoplist"></div>
-      <p class="small">Copy for Todoist copies the unticked items, one per line. Paste into a Todoist task box and it offers to add each line as its own task.</p>
     </section>
     <section class="view" id="v-progress" hidden>
       <div class="vh2"><h2>Progress</h2></div>
@@ -519,7 +522,9 @@ function renderLibMenu(){const on=id=>st.libcats.includes(id),all0=!st.libcats.l
   $('#libddm').innerHTML=`<button role="menuitemcheckbox" aria-checked="${all0}" data-lc="all">${ck}All categories</button>`+
    CATS.map(c=>`<button role="menuitemcheckbox" aria-checked="${on(c.id)}" data-lc="${c.id}">${ck}${c.n}</button>`).join('')+
    `<hr><button role="menuitemcheckbox" aria-checked="${!!st.libkid}" data-lt="libkid">${ck}Kid-friendly only</button><button role="menuitemcheckbox" aria-checked="${!!st.libsaved}" data-lt="libsaved">${ck}Saved only</button>`}
-function libMenu(open){const m=$('#libddm');if(!m)return;m.hidden=!open;$('#libdd').setAttribute('aria-expanded',String(open))}
+function ddMenu(id,open){const m=$('#'+id+'m');if(!m)return;m.hidden=!open;$('#'+id).setAttribute('aria-expanded',String(open))}
+function libMenu(open){ddMenu('libdd',open)}
+function closeMenus(){ddMenu('libdd',false);ddMenu('shopdd',false)}
 function renderLibrary(){
   renderLibMenu();
   const cs=st.libcats,L=all().filter(m=>(!cs.length||cs.includes(m.cat))&&(!st.libkid||m.kid)&&(!st.libsaved||m.src==='saved'));
@@ -531,7 +536,9 @@ function shopData(){
   return Object.values(by).map(g=>{g.batches=Math.ceil(g.days.length/g.m.serves);return g});
 }
 function renderShopping(){
-  $('#shopr').innerHTML=[[1,'This day'],[3,'3 days'],[7,'7 days']].map(([n,t])=>`<button class="chip${st.shopDays===n?' on':''}" data-shopd="${n}">${t}</button>`).join('');
+  const R=[[1,'This day'],[3,'3 days'],[7,'7 days']],ck='<span class="ck" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>';
+  $('#shopddT').textContent=(R.find(r=>r[0]===st.shopDays)||R[2])[1];
+  $('#shopddm').innerHTML=R.map(([n,t])=>`<button class="rd" role="menuitemradio" aria-checked="${st.shopDays===n}" data-shopd="${n}">${ck}${t}</button>`).join('');
   const G=shopData();
   const from=fmt(st.day,{weekday:'short',month:'short',day:'numeric'}),to=fmt(add(st.day,st.shopDays-1),{weekday:'short',month:'short',day:'numeric'});
   const left=G.reduce((a,g)=>a+g.m.ing.filter((_,j)=>!st.checked[g.m.id+'|'+j]).length,0);
@@ -760,16 +767,17 @@ document.querySelector('.lacts').onclick=e=>{const b=e.target.closest('[data-a]'
 
 /* ---------- page events ---------- */
 document.addEventListener('click',e=>{
-  if(!e.target.closest('.ddw'))libMenu(false);
+  const dw=e.target.closest('.ddw');if(!dw)closeMenus();
   if(e.target.closest('#sheet,#lift'))return;
   let b;
   if(b=e.target.closest('[data-view]')){if(L.open)closeLift(false);st.view=b.dataset.view;renderAll();scrollTo(0,0)}
   else if(b=e.target.closest('[data-slot]'))openLift(b.dataset.slot);
   else if(b=e.target.closest('[data-lib]')){const m=byId(b.dataset.lib);if(m)openLift(m.cat,m.id,b.querySelector('.cw'))}
   else if(e.target.closest('#libdd'))libMenu($('#libddm').hidden);
+  else if(e.target.closest('#shopdd'))ddMenu('shopdd',$('#shopddm').hidden);
   else if(b=e.target.closest('#libddm [data-lc]')){const id=b.dataset.lc;if(id==='all')st.libcats=[];else{const a=st.libcats.filter(x=>x!==id);if(a.length===st.libcats.length)a.push(id);st.libcats=a.length===CATS.length?[]:CATS.map(c=>c.id).filter(x=>a.includes(x))}renderLibrary();save()}
   else if(b=e.target.closest('#libddm [data-lt]')){st[b.dataset.lt]=!st[b.dataset.lt];renderLibrary();save()}
-  else if(b=e.target.closest('[data-shopd]')){st.shopDays=+b.dataset.shopd;renderAll()}
+  else if(b=e.target.closest('[data-shopd]')){st.shopDays=+b.dataset.shopd;ddMenu('shopdd',false);renderAll()}
   else if(e.target.closest('#dprev'))stepDay(-1);
   else if(e.target.closest('#dnext'))stepDay(1);
   else if(e.target.closest('#dlabel'))calSheet(st.day);
@@ -781,7 +789,7 @@ document.addEventListener('click',e=>{
 document.addEventListener('change',e=>{const k=e.target.dataset&&e.target.dataset.ck;if(!k)return;if(e.target.checked)st.checked[k]=true;else delete st.checked[k];renderAll()});
 $('#scrim').onclick=closeSheet;
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'&&$('#libddm')&&!$('#libddm').hidden){libMenu(false);$('#libdd').focus();return}
+  if(e.key==='Escape'){const o=[...document.querySelectorAll('.ddm')].find(m=>!m.hidden);if(o){closeMenus();$('#'+o.id.slice(0,-1)).focus();return}}
   if(!$('#sheet').hidden){if(e.key==='Escape')closeSheet();return}
   if(L.open){
     if(e.key==='Escape')closeLift();
