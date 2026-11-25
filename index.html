@@ -362,6 +362,10 @@ const BASE=[
  ing:['50 g rolled oats','1 tbsp chia seeds','1 tbsp ground flaxseed','1 tsp cinnamon spice blend','Pinch of salt','300 ml water','1 banana, halved lengthwise and scored','1 tbsp peanut butter','15 g shelled pistachios, roughly chopped','10 g pecans, chopped'],
  steps:['Put the oats, chia, flax, spice, salt and water in a small pot or rice cooker.','Cook on medium, stirring, until thick and creamy, about 5 minutes (or use the rice cooker\'s porridge setting).','Loosen the peanut butter with a splash of warm water.','Spoon the oats into a bowl, lay the banana alongside and drizzle with the peanut butter.','Top with the pistachios and pecans.'],
  note:'Saved from @the_hyperfitdoc. No macros were posted, so calories, protein, carbs, fat and fiber are my estimates.'},
+{id:'b5',cat:'breakfast',name:'Greek yogurt with berries and muesli',desc:'Greek yogurt with blueberries, blackberries, Seitenbacher muesli and honey.',src:'yours',kid:true,dish:'bowl',time:'5 min · serves 1',kcal:465,p:31,c:68,f:9,colors:['#f6f1ea','#3b4a8c','#2e2440','#d9a066','#e8c27a'],
+ ing:['250 g plain 2% Greek yogurt','75 g blueberries','75 g blackberries','40 g Seitenbacher muesli','1 tbsp honey'],
+ steps:['Spoon the yogurt into a bowl.','Top with the blueberries and blackberries.','Sprinkle the muesli over.','Drizzle with the honey.'],
+ note:'Your usual breakfast. The numbers are estimates.'},
 {id:'l1',cat:'lunch',name:'Lemony red and brown lentil soup',desc:'Creamy red and brown lentils with spinach and lemon.',src:'yours',img:IMG_L1,thumb:IMG_L1_SQ,kid:true,dish:'bowl',time:'35 min · serves 4 · freezes well',kcal:420,p:26,c:58,f:9,colors:['#efdcc4','#d9822b','#3f7d3a','#f7f3ee','#c0562b'],
  ing:['1.5 cups red/brown lentil mix, rinsed','1 tbsp olive oil, plus more to finish','1 onion, diced','2 carrots, diced','3 garlic cloves, minced','1.5 tsp ground cumin','1 tsp smoked paprika','1 tbsp tomato paste','6 cups low-sodium broth','1 tsp salt','4 cups baby spinach','1 lemon, juiced','1 cup plain Greek yogurt, for topping'],
  steps:['Heat the oil over medium heat. Cook the onion and carrots until soft, about 6 minutes.','Stir in the garlic, cumin, smoked paprika and tomato paste for about 1 minute.','Add the lentils, broth and salt. Boil, then simmer partly covered about 25 minutes, until the brown lentils are tender.','Stir in the spinach until wilted, then the lemon juice. Adjust the salt.','Top each bowl with Greek yogurt and a drizzle of olive oil.'],
@@ -371,7 +375,7 @@ const BASE=[
  steps:['Soak the noodles in just-boiled water for about 8 minutes while you cook, then drain.','Warm the sesame oil in a large pan, add the TVP, soy sauce and 1/2 cup water, and simmer until absorbed, 3 to 4 minutes.','Add the garlic, edamame and corn and cook 3 minutes until hot.','Stir in the gochujang, vinegar and 2 tbsp water, then toss the noodles through until glossy.','Top with the scallions.'],
  note:'Saved from @the_hyperfitdoc. Protein (32 g) and fiber (13 g) are as posted; the recipe, calories, carbs and fat are my estimates.'}
 ];
-const FIBER={b4:18,d4:13,l1:10};
+const FIBER={b4:18,b5:9,d4:13,l1:10};
 const SERVES={l1:4};
 BASE.forEach(m=>{m.fib=FIBER[m.id]||0;m.serves=SERVES[m.id]||1});
 const CATS=[{id:'breakfast',n:'Breakfast',suit:'var(--s1)',share:.3,pal:['#efe3d2','#f6f1ea','#d9a066','#c23a4b','#3f7d3a']},{id:'lunch',n:'Lunch',suit:'var(--s2)',share:.3,pal:['#e2ead6','#e8d4a6','#5f9e4c','#e0533d','#d9a066']},{id:'dinner',n:'Dinner',suit:'var(--s3)',share:.3,pal:['#dde3ea','#f08a5d','#e8c27a','#3f7d3a','#f4e04d']},{id:'snack',n:'Snacks',suit:'var(--s4)',share:.1,pal:['#f0e0d2','#c0392b','#f1e3c6','#8a5a3b','#7aa13a']},
