@@ -514,7 +514,7 @@ function renderToday(){
      `<div class="thumb">${m?rowCard(m):`<div class="emptyc"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>`}</div></div>`}).join('')+CATS.filter(c=>c.opt&&!locked(c.id)).map(c=>`<button class="addopt" data-slot="${c.id}" style="--suit:${c.suit}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Add ${c.id}</button>`).join('');
 }
 function libStuck(){const h=$('#libhead'),on=st.view==='library'&&!!h&&scrollY>0&&h.getBoundingClientRect().top<=parseFloat(getComputedStyle(h).top||0)+.5;h&&h.classList.toggle('stuck',on);document.documentElement.classList.toggle('stuck',on)}
-addEventListener('scroll',libStuck,{passive:true});addEventListener('resize',libStuck);
+addEventListener('scroll',()=>{libStuck();setTheme()},{passive:true});addEventListener('resize',libStuck);
 function libLabel(){const n=st.libcats.length,x=(st.libkid?1:0)+(st.libsaved?1:0);return (n===0||n===CATS.length?'All categories':n===1?cat(st.libcats[0]).n:n+' categories')+(x?` · ${x} filter${x>1?'s':''}`:'')}
 function renderLibMenu(){const on=id=>st.libcats.includes(id),all0=!st.libcats.length,ck='<span class="ck" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>';
   $('#libddT').textContent=libLabel();
@@ -557,7 +557,7 @@ function renderAll(){
   document.querySelectorAll('.view').forEach(v=>v.hidden=v.id!=='v-'+st.view);
   document.querySelectorAll('#tabs button').forEach(b=>{const on=b.dataset.view===st.view;b.classList.toggle('on',on);b.setAttribute('aria-current',on?'page':'false')});
   if(st.view==='today')renderToday();else if(st.view==='library')renderLibrary();else if(st.view==='shopping')renderShopping();else renderProgress();
-  save();libStuck();
+  save();libStuck();setTheme();
 }
 function sizing(){
   const ch=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--chrome'))||0;
@@ -568,8 +568,12 @@ function sizing(){
 /* ---------- toast and sheets ---------- */
 let tt;
 function toast(msg,undo){const t=$('#toast');$('#toastT').textContent=msg;t.classList.toggle('has',!!undo);$('#toastB').onclick=()=>{if(undo)undo();t.hidden=true};t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,undo?5000:2400)}
-function openSheet(html,onClick){$('#sheetIn').innerHTML=html;$('#sheetIn').onclick=e=>{if(e.target.closest('[data-close]'))return closeSheet();onClick&&onClick(e)};$('#scrim').hidden=false;$('#sheet').hidden=false;const f=$('#sheetIn').querySelector('button,input,textarea');f&&f.focus({preventScroll:true})}
-function closeSheet(){$('#scrim').hidden=true;$('#sheet').hidden=true}
+function openSheet(html,onClick){$('#sheetIn').innerHTML=html;$('#sheetIn').onclick=e=>{if(e.target.closest('[data-close]'))return closeSheet();onClick&&onClick(e)};$('#scrim').hidden=false;$('#sheet').hidden=false;setTheme();const f=$('#sheetIn').querySelector('button,input,textarea');f&&f.focus({preventScroll:true})}
+function closeSheet(){$('#scrim').hidden=true;$('#sheet').hidden=true;setTheme()}
+/* the status bar area takes the colour of whatever is at the top of the screen */
+function setTheme(){const m=document.querySelector('meta[name=theme-color]');if(!m)return;const b=document.querySelector('.band');
+  const c=!$('#sheet').hidden?(L.open?'#1a1b1a':'#8a8c88'):L.open?'#2c2e2c':(b&&b.getBoundingClientRect().bottom>0?'#e6eae3':'#fafaf7');
+  if(m.getAttribute('content')!==c)m.setAttribute('content',c)}
 function copyText(text,title,okMsg){const fb=()=>openSheet(`<h2>${title}</h2><p class="sub">Your browser blocked copying, so select the text and copy it.</p><textarea id="cpy" readonly>${esc(text)}</textarea><div class="row"><button class="btn" data-close>Done</button><button class="btn pri" data-sel>Select text</button></div>`,e=>{if(e.target.closest('[data-sel]')){const a=$('#cpy');a.focus();a.select();a.setSelectionRange(0,a.value.length)}});
   try{navigator.clipboard.writeText(text).then(()=>toast(okMsg),fb)}catch(e){fb()}}
 function foodvisor(m){return `${m.name}\n${m.desc||''}\n1 serving: ${m.kcal} kcal, protein ${m.p} g, carbs ${m.c} g, fat ${m.f} g, fiber ${m.fib} g`}
@@ -638,7 +642,7 @@ function openLift(c,startId,fromEl){
   if(L.open)return;
   const e=locked(c),from=fromEl||slotCw(c);L.open=true;L.cat=c;L.rep=1;L.from=fromEl?null:from;
   $('#lcat').textContent=cat(c).n;$('#lkid').setAttribute('aria-checked',String(!!st.kid));
-  lift.hidden=false;document.documentElement.classList.add('lk');
+  lift.hidden=false;document.documentElement.classList.add('lk');setTheme();
   const want=startId||(e&&e.id);let idx=deck(c).findIndex(m=>m.id===want);
   if(idx<0&&startId&&st.kid){st.kid=false;$('#lkid').setAttribute('aria-checked','false');idx=deck(c).findIndex(m=>m.id===want)}
   buildRail(Math.max(0,idx));
@@ -651,7 +655,7 @@ function openLift(c,startId,fromEl){
   }
   $('#lclose').focus({preventScroll:true});
 }
-function shut(){L.open=false;lift.hidden=true;document.documentElement.classList.remove('lk')}
+function shut(){L.open=false;lift.hidden=true;document.documentElement.classList.remove('lk');setTheme()}
 function closeLift(flyBack){
   if(!L.open)return;
   const to=L.from,el=rail.children[L.i],e=locked(L.cat),m=L.list[L.i],c=L.cat;
