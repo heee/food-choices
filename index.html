@@ -440,7 +440,7 @@ function rowCard(m){return `<div class="cw r"><div class="nb"><div class="rcd"><
 function card(m,size,i){
   const c=cat(m.cat),n=esc(m.name);
   const mac=`<div class="mac">${[['f','fat'],['p','protein'],['c','carbs'],['fib','fiber']].map(([k,l])=>`<span><svg viewBox="0 0 24 24" aria-hidden="true">${MICON[k]}</svg><b>${m[k]}g</b>${l}</span>`).join('')}</div>`;
-  const front=`<div class="side front"><div class="art">${pic(m)}</div><span class="tag kcp">${m.kcal} kcal</span><span class="tag src">${size==='m'?c.n:m.src==='yours'?'Your recipe':m.src==='saved'?'Saved':'Sample'}${m.kid?`<svg viewBox="0 0 24 24" role="img" aria-label="Kid-friendly"><title>Kid-friendly</title><circle cx="12" cy="12.5" r="8.5"/><path d="M12 4c-1.6 0-2.4 1-2.4 2s.8 1.6 1.6 1.6"/><path d="M9.2 11.2h.01M14.8 11.2h.01"/><path d="M9.3 15.2c1.5 1.3 3.9 1.3 5.4 0"/></svg>`:''}</span>`+
+  const front=`<div class="side front"><div class="art">${pic(m)}</div><span class="tag kcp">${m.kcal} kcal</span><span class="tag src">${size==='m'?c.n:`${m.p} g protein`}${m.kid?`<svg viewBox="0 0 24 24" role="img" aria-label="Kid-friendly"><title>Kid-friendly</title><circle cx="12" cy="12.5" r="8.5"/><path d="M12 4c-1.6 0-2.4 1-2.4 2s.8 1.6 1.6 1.6"/><path d="M9.2 11.2h.01M14.8 11.2h.01"/><path d="M9.3 15.2c1.5 1.3 3.9 1.3 5.4 0"/></svg>`:''}</span>`+
    `<div class="ctx"><h3>${n}</h3>${m.desc?`<p class="dsc">${esc(m.desc)}</p>`:''}</div>${mac}</div>`;
   const back=size==='b'?`<div class="side back"><div class="bk"><h4>${n}</h4><p>${esc(m.time)} · ${m.kcal} kcal (est.)</p>${mac}<h5>Ingredients</h5><ul>${m.ing.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><h5>Method</h5><ol>${m.steps.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>${m.note?`<h5>Note</h5><p>${esc(m.note)}</p>`:''}</div></div>`:'';
   return `<div class="cw ${size}"${i!=null?` data-i="${i}"`:''}><div class="nb"><div class="pc" style="--suit:${c.suit}"><div class="flip">${front}${back}</div></div></div></div>`;
@@ -489,8 +489,8 @@ function renderToday(){
 function libStuck(){const h=$('#libhead'),on=st.view==='library'&&!!h&&scrollY>0&&h.getBoundingClientRect().top<=parseFloat(getComputedStyle(h).top||0)+.5;h&&h.classList.toggle('stuck',on);document.documentElement.classList.toggle('stuck',on)}
 addEventListener('scroll',libStuck,{passive:true});addEventListener('resize',libStuck);
 function renderLibrary(){
-  $('#libf').innerHTML=[['all','All']].concat(CATS.map(c=>[c.id,c.n])).concat([['kid','Kid-friendly']]).map(([id,n])=>`<button class="chip${st.libf===id?' on':''}" data-libf="${id}">${n}</button>`).join('');
-  const L=all().filter(m=>st.libf==='all'||(st.libf==='kid'?m.kid:m.cat===st.libf));
+  $('#libf').innerHTML=[['all','All']].concat(CATS.map(c=>[c.id,c.n])).concat([['kid','Kid-friendly'],['src:saved','Saved'],['src:sample','Samples']]).concat(all().some(m=>m.src==='yours')?[['src:yours','Your recipes']]:[]).map(([id,n])=>`<button class="chip${st.libf===id?' on':''}" data-libf="${id}">${n}</button>`).join('');
+  const f=st.libf,L=all().filter(m=>f==='all'||(f==='kid'?m.kid:f.startsWith('src:')?m.src===f.slice(4):m.cat===f));
   $('#lib').innerHTML=L.length?L.map(m=>`<div class="libc" role="button" tabindex="0" data-lib="${esc(m.id)}" aria-label="${esc(m.name)}">${card(m,'m')}</div>`).join(''):'<p class="empty">No meals here yet.</p>';
 }
 function shopData(){
