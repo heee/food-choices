@@ -377,6 +377,10 @@ const BASE=[
  ing:['1.5 cups red/brown lentil mix, rinsed','1 tbsp olive oil, plus more to finish','1 onion, diced','2 carrots, diced','3 garlic cloves, minced','1.5 tsp ground cumin','1 tsp smoked paprika','1 tbsp tomato paste','6 cups low-sodium broth','1 tsp salt','4 cups baby spinach','1 lemon, juiced','1 cup plain Greek yogurt, for topping'],
  steps:['Heat the oil over medium heat. Cook the onion and carrots until soft, about 6 minutes.','Stir in the garlic, cumin, smoked paprika and tomato paste for about 1 minute.','Add the lentils, broth and salt. Boil, then simmer partly covered about 25 minutes, until the brown lentils are tender.','Stir in the spinach until wilted, then the lemon juice. Adjust the salt.','Top each bowl with Greek yogurt and a drizzle of olive oil.'],
  note:'From your recipe doc. Numbers are per serving of four. Keeps 4 to 5 days in the fridge.'},
+ {id:'s4',cat:'snack',name:'Banana peanut butter muffins',desc:'Flourless mini muffins of banana, peanut butter and egg, with mini chocolate chips.',src:'saved',by:'@housekeeping_101',kid:true,dish:'plate',time:'25 min · makes 24, serves 12',kcal:200,p:6,c:15,f:13,colors:['#f3e6d4','#c98a4b','#6b3f2c','#f6f1ea','#e8c27a'],
+ ing:['2 ripe bananas','2 eggs','1 cup peanut butter','2 tbsp honey','2 tsp vanilla extract','1/2 tsp baking powder','1/3 cup mini chocolate chips'],
+ steps:['Heat the oven to 350°F and grease a 24-cup mini muffin tin.','Mash the bananas, then mix in the peanut butter, eggs, honey, vanilla and baking powder until smooth.','Fold in the chocolate chips and fill the cups.','Bake 10 to 12 minutes until set and golden, then cool 5 minutes in the tin.'],
+ note:'Saved from @housekeeping_101. One serving is 2 mini muffins; calories, carbs, protein and fat are as posted per muffin, doubled. The chip amount, method and fiber are my estimates.'},
  {id:'d4',cat:'dinner',name:'Gochujang noodles',desc:'Rice noodles with soy crumbles, edamame and corn in spicy gochujang.',src:'saved',by:'@the_hyperfitdoc',img:IMG_D4,thumb:IMG_D4_SQ,kid:false,dish:'bowl',time:'15 min · one pan',kcal:540,p:32,c:79,f:11,colors:['#efe3d2','#d9783f','#e8c27a','#7aa13a','#c23a2b'],
  ing:['50 g dry rice noodles','30 g dry TVP (textured soy protein)','100 g shelled edamame, frozen is fine','50 g sweetcorn','1 tbsp gochujang','1 tsp soy sauce','1 tsp rice vinegar','1 tsp toasted sesame oil','1 garlic clove, grated','2 scallions, sliced'],
  steps:['Soak the noodles in just-boiled water for about 8 minutes while you cook, then drain.','Warm the sesame oil in a large pan, add the TVP, soy sauce and 1/2 cup water, and simmer until absorbed, 3 to 4 minutes.','Add the garlic, edamame and corn and cook 3 minutes until hot.','Stir in the gochujang, vinegar and 2 tbsp water, then toss the noodles through until glossy.','Top with the scallions.'],
@@ -390,8 +394,8 @@ const BASE=[
  steps:['Heat the oven to 425°F.','Toss the sweet potato with the oil, paprika, chili powder and a pinch of salt, then roast 25 to 30 minutes, turning once, until browned.','Brown the turkey in a skillet over medium-high heat with the cumin, garlic powder, salt and pepper, about 8 minutes.','Plate the sweet potato and turkey with the cottage cheese drizzled with honey and the avocado.'],
  note:'Saved from an Instagram post that had no recipe. The recipe and all the numbers are my estimates.'}
 ];
-const FIBER={b4:18,b5:9,b6:8,d4:13,d5:4,d6:11,l1:10};
-const SERVES={l1:4,d5:2};
+const FIBER={b4:18,b5:9,b6:8,s4:2,d4:13,d5:4,d6:11,l1:10};
+const SERVES={l1:4,d5:2,s4:12};
 BASE.forEach(m=>{m.fib=FIBER[m.id]||0;m.serves=SERVES[m.id]||1});
 const CATS=[{id:'breakfast',n:'Breakfast',suit:'var(--s1)',share:.3,pal:['#efe3d2','#f6f1ea','#d9a066','#c23a4b','#3f7d3a']},{id:'lunch',n:'Lunch',suit:'var(--s2)',share:.3,pal:['#e2ead6','#e8d4a6','#5f9e4c','#e0533d','#d9a066']},{id:'dinner',n:'Dinner',suit:'var(--s3)',share:.3,pal:['#dde3ea','#f08a5d','#e8c27a','#3f7d3a','#f4e04d']},{id:'snack',n:'Snacks',suit:'var(--s4)',share:.1,pal:['#f0e0d2','#c0392b','#f1e3c6','#8a5a3b','#7aa13a']},
  {id:'dessert',n:'Desserts',suit:'var(--s5)',share:0,opt:true,pal:['#efe1e6','#6b3f2c','#e9d6c4','#b5485d','#f3eadf']}]; // opt: no set share; counts against what's left, row shows only when locked
