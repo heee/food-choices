@@ -370,6 +370,10 @@ const BASE=[
  ing:['40 g rolled oats','1/2 cup 2% cottage cheese','1 egg','1/4 cup milk','1 tbsp maple syrup','1/2 tsp vanilla extract','1/2 tsp baking powder','Pinch of baking soda','60 g raspberries'],
  steps:['Heat the oven to 350°F and grease a small baking dish.','Blend everything except the raspberries until smooth.','Pour into the dish and press the raspberries in.','Bake 22 to 25 minutes, until set and golden.'],
  note:'Saved from @success.recipes. The post lists the ingredients without amounts, so the amounts and all the numbers are my estimates.'},
+{id:'b7',cat:'breakfast',name:'Eggs and sourdough',desc:'Soft scrambled eggs with chives and a slice of toasted sourdough.',src:'saved',by:'@coachdango',kid:true,dish:'plate',time:'10 min · serves 1',kcal:450,p:30,c:27,f:24,colors:['#f6f1ea','#e8c27a','#a8743f','#5f9e4c','#efe3d2'],
+ ing:['4 eggs','1 slice sourdough bread (about 50 g)','1 tsp butter','1 tbsp chopped chives','Salt and black pepper'],
+ steps:['Whisk the eggs with a pinch of salt.','Melt the butter in a nonstick pan over medium-low heat.','Add the eggs and stir gently until just set and still soft.','Toast the sourdough.','Plate the eggs with the toast and top with chives and pepper.'],
+ note:'Saved from @coachdango, which suggests 3 to 6 eggs and a slice of sourdough. The amounts, method and numbers are my estimates for 4 eggs.'},
 {id:'b5',cat:'breakfast',name:'Greek yogurt with berries and muesli',desc:'Greek yogurt with blueberries, blackberries, Seitenbacher muesli and honey.',src:'yours',img:IMG_B5,thumb:IMG_B5_SQ,kid:true,dish:'bowl',time:'5 min · serves 1',kcal:420,p:32,c:66,f:4,colors:['#f6f1ea','#3b4a8c','#2e2440','#d9a066','#e8c27a'],
  ing:['250 g plain 0% Greek yogurt','75 g blueberries','75 g blackberries','40 g Seitenbacher muesli','1 tbsp honey'],
  steps:['Spoon the yogurt into a bowl.','Top with the blueberries and blackberries.','Sprinkle the muesli over.','Drizzle with the honey.'],
@@ -395,7 +399,7 @@ const BASE=[
  steps:['Heat the oven to 425°F.','Toss the sweet potato with the oil, paprika, chili powder and a pinch of salt, then roast 25 to 30 minutes, turning once, until browned.','Brown the turkey in a skillet over medium-high heat with the cumin, garlic powder, salt and pepper, about 8 minutes.','Plate the sweet potato and turkey with the cottage cheese drizzled with honey and the avocado.'],
  note:'Saved from an Instagram post that had no recipe. The recipe and all the numbers are my estimates.'}
 ];
-const FIBER={b4:18,b5:9,b6:8,x3:2,d4:13,d5:4,d6:11,l1:10};
+const FIBER={b4:18,b7:1,b5:9,b6:8,x3:2,d4:13,d5:4,d6:11,l1:10};
 const SERVES={l1:4,d5:2,x3:12};
 BASE.forEach(m=>{m.fib=FIBER[m.id]||0;m.serves=SERVES[m.id]||1});
 const CATS=[{id:'breakfast',n:'Breakfast',suit:'var(--s1)',share:.3,pal:['#efe3d2','#f6f1ea','#d9a066','#c23a4b','#3f7d3a']},{id:'lunch',n:'Lunch',suit:'var(--s2)',share:.3,pal:['#e2ead6','#e8d4a6','#5f9e4c','#e0533d','#d9a066']},{id:'dinner',n:'Dinner',suit:'var(--s3)',share:.3,pal:['#dde3ea','#f08a5d','#e8c27a','#3f7d3a','#f4e04d']},{id:'snack',n:'Snacks',suit:'var(--s4)',share:.1,pal:['#f0e0d2','#c0392b','#f1e3c6','#8a5a3b','#7aa13a']},
@@ -557,7 +561,7 @@ const AISLE=[
  ['A03',/(peanut|almond|nut) butter|hummus/],
  ['A05',/\bcan(ned)?\b|tuna|applesauce|chickpea|cannellini|black beans|kidney beans|pinto beans|\bchili\b(?!\s*(flakes|powder))/],
  ['Frozen',/frozen|edamame/],
- ['A01',/banana|\bapples?\b|lemon|\blimes?\b|berr(y|ies)|orange juice|oranges?\b|grapes|avocado|spinach|arugula|lettuce|salad|cucumber|tomato(?!\s*paste)|onion|scallion|garlic clove|carrot|bell pepper|green beans|potato|broccoli|zucchini|mushroom|celery|\bfresh\b|dill|parsley|cilantro|basil|\bherbs?\b/],
+ ['A01',/banana|\bapples?\b|lemon|\blimes?\b|berr(y|ies)|orange juice|oranges?\b|grapes|avocado|spinach|arugula|lettuce|salad|cucumber|tomato(?!\s*paste)|onion|scallion|garlic clove|carrot|bell pepper|green beans|potato|broccoli|zucchini|mushroom|celery|\bfresh\b|dill|parsley|cilantro|basil|chives|\bherbs?\b/],
  ['A02',/chicken|turkey|\bbeef\b|\bpork\b|salmon|shrimp|\bfish\b|sourdough|\bbread\b|pita|tortilla/],
  ['Back',/\bmilk\b|\beggs?\b|yogh?urt|cheese|\bfeta\b|\bbutter\b|\bcream\b/],
  ['A07',/granola bar/],
