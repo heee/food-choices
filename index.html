@@ -155,7 +155,7 @@ button,[role=button]{cursor:pointer}
 .sub2{color:var(--mute);font-size:14px;margin:0 0 12px}
 .chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px}
 /* Library: title and category chips stay pinned while the grid scrolls under them */
-.libhead{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:var(--sheet);margin:-16px -16px 14px;padding:16px 16px 10px;border-radius:24px 24px 0 0;transition:box-shadow .2s}
+.libhead{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:var(--sheet);margin:-16px -16px 14px;padding:16px 16px 2px;border-radius:24px 24px 0 0;transition:box-shadow .2s}
 .libhead.stuck{border-radius:0;box-shadow:0 1px 0 var(--line),0 8px 16px -10px rgba(29,32,30,.12)}
 #stb{position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:var(--sheet);z-index:6;display:none}
 html.stuck #stb{display:block}
@@ -245,6 +245,18 @@ html.lk #toast{bottom:calc(var(--botm) + 160px)}
 .btn{min-height:46px;border-radius:10px;border:1px solid var(--line);background:none;font-weight:500;font-size:15px;padding:0 14px;display:inline-flex;align-items:center;justify-content:center}
 .btn.pri{background:var(--pri);border-color:var(--pri);color:var(--prink)}
 .btn.sm{min-height:40px;font-size:14px;border-radius:10px}
+.ddw{position:relative}
+.dd{display:flex;align-items:center;gap:6px;height:36px;padding:0 10px 0 14px;border:0;border-radius:18px;background:var(--soft);font-size:14px;font-weight:500;color:var(--ink);white-space:nowrap}
+.dd svg{width:16px;height:16px;fill:none;stroke:var(--mute);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+.dd[aria-expanded=true] svg{transform:rotate(180deg)}
+.ddm{position:absolute;right:0;top:calc(100% + 6px);z-index:8;min-width:210px;padding:6px;border-radius:14px;background:var(--sheet);border:1px solid var(--line);box-shadow:0 12px 32px rgba(29,32,30,.14)}
+.ddm button{display:flex;align-items:center;gap:10px;width:100%;min-height:40px;padding:0 10px;border:0;border-radius:9px;background:none;font-size:15px;color:var(--ink);text-align:left}
+.ddm button:active{background:var(--soft)}
+.ddm .ck{display:grid;place-items:center;width:20px;height:20px;flex:none;border-radius:6px;border:1.4px solid var(--line)}
+.ddm .ck svg{width:14px;height:14px;fill:none;stroke:var(--sheet);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.ddm [aria-checked=true] .ck{background:var(--pri);border-color:var(--pri)}
+.ddm [aria-checked=true] .ck svg{opacity:1}
+.ddm hr{border:0;border-top:1px solid var(--line);margin:6px 4px}
 .row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:14px}
 .form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .form .wide{grid-column:1/-1}
@@ -273,8 +285,7 @@ textarea{min-height:100px;font:15px/1.4 var(--fb)}
       <div id="meals"></div>
     </section>
     <section class="view" id="v-library" hidden>
-      <div class="libhead" id="libhead"><div class="vh2"><h2>Library</h2><button class="btn pri sm" id="newMeal">New meal</button></div>
-      <div class="chips" id="libf"></div></div>
+      <div class="libhead" id="libhead"><div class="vh2"><h2>Library</h2><div class="ddw"><button class="dd" id="libdd" aria-haspopup="true" aria-expanded="false" aria-controls="libddm"><span id="libddT">All categories</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10l5 5 5-5"/></svg></button><div class="ddm" id="libddm" role="menu" aria-label="Filter the library" hidden></div></div></div></div>
       <div class="libgrid" id="lib"></div>
       
     </section>
@@ -410,7 +421,8 @@ if(!st||typeof st.plan!=='object'||!st.plan){st={plan:{},kid:false};st.plan[toda
 st.targets=Object.assign({},DEF,st.targets||{});
 if(!st.day||st.day<add(today,-7))st.day=today;
 st.view=['today','library','shopping','progress'].includes(st.view)?st.view:'today';
-st.libf=st.libf||'all';st.shopDays=st.shopDays||7;st.checked=st.checked||{};
+if(!Array.isArray(st.libcats)){const f=st.libf||'all';st.libcats=CATS.some(c=>c.id===f)?[f]:[];st.libkid=f==='kid';st.libsaved=f==='src:saved'}delete st.libf; // Library filter: chosen categories (none = all), plus kid-friendly and saved toggles
+st.shopDays=st.shopDays||7;st.checked=st.checked||{};
 let photos=load(KP)||{};
 let custom=(load(KC)||[]).filter(m=>m&&typeof m.id==='string'&&/^u\d+$/.test(m.id)&&CATS.some(c=>c.id===m.cat));
 custom.forEach(m=>{m.custom=true;m.src='yours';m.serves=1;['kcal','p','c','f','fib'].forEach(k=>m[k]=num(m[k],5000));m.ing=Array.isArray(m.ing)?m.ing.map(String):[];m.steps=Array.isArray(m.steps)?m.steps.map(String):[];m.colors=cat(m.cat).pal;m.dish='plate';m.time=m.time||'Your recipe'});
@@ -488,10 +500,17 @@ function renderToday(){
 }
 function libStuck(){const h=$('#libhead'),on=st.view==='library'&&!!h&&scrollY>0&&h.getBoundingClientRect().top<=parseFloat(getComputedStyle(h).top||0)+.5;h&&h.classList.toggle('stuck',on);document.documentElement.classList.toggle('stuck',on)}
 addEventListener('scroll',libStuck,{passive:true});addEventListener('resize',libStuck);
+function libLabel(){const n=st.libcats.length,x=(st.libkid?1:0)+(st.libsaved?1:0);return (n===0||n===CATS.length?'All categories':n===1?cat(st.libcats[0]).n:n+' categories')+(x?` · ${x} filter${x>1?'s':''}`:'')}
+function renderLibMenu(){const on=id=>st.libcats.includes(id),all0=!st.libcats.length,ck='<span class="ck" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>';
+  $('#libddT').textContent=libLabel();
+  $('#libddm').innerHTML=`<button role="menuitemcheckbox" aria-checked="${all0}" data-lc="all">${ck}All categories</button>`+
+   CATS.map(c=>`<button role="menuitemcheckbox" aria-checked="${on(c.id)}" data-lc="${c.id}">${ck}${c.n}</button>`).join('')+
+   `<hr><button role="menuitemcheckbox" aria-checked="${!!st.libkid}" data-lt="libkid">${ck}Kid-friendly only</button><button role="menuitemcheckbox" aria-checked="${!!st.libsaved}" data-lt="libsaved">${ck}Saved only</button>`}
+function libMenu(open){const m=$('#libddm');if(!m)return;m.hidden=!open;$('#libdd').setAttribute('aria-expanded',String(open))}
 function renderLibrary(){
-  $('#libf').innerHTML=[['all','All']].concat(CATS.map(c=>[c.id,c.n])).concat([['kid','Kid-friendly'],['src:saved','Saved'],['src:sample','Samples']]).concat(all().some(m=>m.src==='yours')?[['src:yours','Your recipes']]:[]).map(([id,n])=>`<button class="chip${st.libf===id?' on':''}" data-libf="${id}">${n}</button>`).join('');
-  const f=st.libf,L=all().filter(m=>f==='all'||(f==='kid'?m.kid:f.startsWith('src:')?m.src===f.slice(4):m.cat===f));
-  $('#lib').innerHTML=L.length?L.map(m=>`<div class="libc" role="button" tabindex="0" data-lib="${esc(m.id)}" aria-label="${esc(m.name)}">${card(m,'m')}</div>`).join(''):'<p class="empty">No meals here yet.</p>';
+  renderLibMenu();
+  const cs=st.libcats,L=all().filter(m=>(!cs.length||cs.includes(m.cat))&&(!st.libkid||m.kid)&&(!st.libsaved||m.src==='saved'));
+  $('#lib').innerHTML=L.length?L.map(m=>`<div class="libc" role="button" tabindex="0" data-lib="${esc(m.id)}" aria-label="${esc(m.name)}">${card(m,'m')}</div>`).join(''):'<p class="empty">No meals match these filters.</p>';
 }
 function shopData(){
   const days=[...Array(st.shopDays)].map((_,i)=>add(st.day,i)),by={};
@@ -570,7 +589,7 @@ function newMealSheet(){
     const c=$('#nCat').value,m={id:'u'+Date.now(),cat:CATS.some(x=>x.id===c)?c:'lunch',name:name.slice(0,60),desc:$('#nDesc').value.trim().slice(0,120),kcal:num($('#nK').value,5000),p:num($('#nP').value,500),c:num($('#nC').value,1000),f:num($('#nF').value,500),fib:num($('#nFib').value,200),kid:$('#nKid').checked,ing:lines('#nIng'),steps:lines('#nSteps')};
     const sv=Object.assign({},m);if(!store(KC,custom.concat([sv]))){toast("Couldn't save, storage is full");return}
     Object.assign(m,{custom:true,src:'yours',serves:1,colors:cat(m.cat).pal,dish:'plate',time:'Your recipe'});custom.push(m);
-    closeSheet();st.libf=m.cat;renderAll();toast(`${m.name} added to ${cat(m.cat).n}`)});
+    closeSheet();st.libcats=[m.cat];renderAll();toast(`${m.name} added to ${cat(m.cat).n}`)});
   $('#nf').onsubmit=e=>e.preventDefault();
 }
 function saveCustom(){store(KC,custom.map(m=>({id:m.id,cat:m.cat,name:m.name,desc:m.desc,kcal:m.kcal,p:m.p,c:m.c,f:m.f,fib:m.fib,kid:m.kid,ing:m.ing,steps:m.steps})))}
@@ -724,25 +743,28 @@ document.querySelector('.lacts').onclick=e=>{const b=e.target.closest('[data-a]'
 
 /* ---------- page events ---------- */
 document.addEventListener('click',e=>{
+  if(!e.target.closest('.ddw'))libMenu(false);
   if(e.target.closest('#sheet,#lift'))return;
   let b;
   if(b=e.target.closest('[data-view]')){if(L.open)closeLift(false);st.view=b.dataset.view;renderAll();scrollTo(0,0)}
   else if(b=e.target.closest('[data-slot]'))openLift(b.dataset.slot);
   else if(b=e.target.closest('[data-lib]')){const m=byId(b.dataset.lib);if(m)openLift(m.cat,m.id,b.querySelector('.cw'))}
-  else if(b=e.target.closest('[data-libf]')){st.libf=b.dataset.libf;renderAll()}
+  else if(e.target.closest('#libdd'))libMenu($('#libddm').hidden);
+  else if(b=e.target.closest('#libddm [data-lc]')){const id=b.dataset.lc;if(id==='all')st.libcats=[];else{const a=st.libcats.filter(x=>x!==id);if(a.length===st.libcats.length)a.push(id);st.libcats=a.length===CATS.length?[]:CATS.map(c=>c.id).filter(x=>a.includes(x))}renderLibrary();save()}
+  else if(b=e.target.closest('#libddm [data-lt]')){st[b.dataset.lt]=!st[b.dataset.lt];renderLibrary();save()}
   else if(b=e.target.closest('[data-shopd]')){st.shopDays=+b.dataset.shopd;renderAll()}
   else if(e.target.closest('#dprev'))stepDay(-1);
   else if(e.target.closest('#dnext'))stepDay(1);
   else if(e.target.closest('#dlabel'))calSheet(st.day);
   else if(e.target.closest('#openSet'))setSheet();
   else if(e.target.closest('#kpill')){const o=['left','planned','target'];st.kmode=o[(o.indexOf(st.kmode||'left')+1)%3];renderTop();save()}
-  else if(e.target.closest('#newMeal'))newMealSheet();
   else if(e.target.closest('#exportShop')){const t=todoText();if(!t)toast('Nothing to copy yet');else copyText(t,'Copy for Todoist','Copied, paste it into Todoist')}
   else if(e.target.closest('#scrim'))closeSheet();
 });
 document.addEventListener('change',e=>{const k=e.target.dataset&&e.target.dataset.ck;if(!k)return;if(e.target.checked)st.checked[k]=true;else delete st.checked[k];renderAll()});
 $('#scrim').onclick=closeSheet;
 document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&$('#libddm')&&!$('#libddm').hidden){libMenu(false);$('#libdd').focus();return}
   if(!$('#sheet').hidden){if(e.key==='Escape')closeSheet();return}
   if(L.open){
     if(e.key==='Escape')closeLift();
