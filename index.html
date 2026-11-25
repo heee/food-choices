@@ -398,10 +398,22 @@ const BASE=[
  {id:'d6',cat:'dinner',also:['lunch'],name:'Turkey, sweet potato and cottage cheese plate',desc:'Spiced ground turkey with roasted sweet potato, cottage cheese with honey and avocado.',src:'saved',img:IMG_D6,thumb:IMG_D6_SQ,kid:true,dish:'plate',time:'35 min · serves 1',kcal:640,p:45,c:58,f:26,colors:['#f3eadf','#6b3f2c','#d9822b','#7aa14a','#f6f1ea'],
  ing:['4 oz 93% lean ground turkey','200 g sweet potato, cut in cubes','1 tsp olive oil','1/2 tsp smoked paprika','1/4 tsp chili powder','1/2 tsp ground cumin','1/4 tsp garlic powder','Salt and pepper','150 g 2% cottage cheese','1 tsp honey','1/2 avocado, cubed'],
  steps:['Heat the oven to 425°F.','Toss the sweet potato with the oil, paprika, chili powder and a pinch of salt, then roast 25 to 30 minutes, turning once, until browned.','Brown the turkey in a skillet over medium-high heat with the cumin, garlic powder, salt and pepper, about 8 minutes.','Plate the sweet potato and turkey with the cottage cheese drizzled with honey and the avocado.'],
- note:'Saved from an Instagram post that had no recipe. The recipe and all the numbers are my estimates.'}
+ note:'Saved from an Instagram post that had no recipe. The recipe and all the numbers are my estimates.'},
+ {id:'s5',cat:'snack',name:'Savory cottage cheese bowl',desc:'Cottage cheese topped with cherry tomatoes, cucumber and everything seasoning.',src:'yours',kid:false,dish:'bowl',time:'5 min · serves 1',kcal:220,p:25,c:15,f:5,colors:['#f6f1ea','#e0533d','#5f9e4c','#efe3d2','#d9a066'],
+ ing:['1 cup (225 g) 2% cottage cheese','100 g cherry tomatoes','1/2 cucumber (about 100 g)','1 tsp everything bagel seasoning','Black pepper'],
+ steps:['Spoon the cottage cheese into a bowl.','Halve the tomatoes and dice the cucumber, then pile them on top.','Sprinkle with the seasoning and pepper.'],
+ note:'The recipe and numbers are my estimates.'},
+ {id:'d7',cat:'dinner',also:['lunch'],name:'Lemon garlic chicken with white beans and spinach',desc:'One-pan chicken with cannellini beans, spinach, garlic and lemon.',src:'yours',kid:true,dish:'plate',time:'25 min · serves 2',kcal:525,p:58,c:29,f:19,colors:['#eef0ea','#e8c27a','#3f7d3a','#f6f1ea','#d9a066'],
+ ing:['400 g chicken breast','1 can (400 g) cannellini beans','200 g baby spinach','3 garlic cloves','1 lemon','2 tbsp olive oil','Salt and black pepper'],
+ steps:['Cut the chicken into bite-size pieces and season with salt and pepper.','Heat 1 tbsp oil in a large skillet over medium-high and cook the chicken 6 to 7 minutes until golden and cooked through, then set it aside.','Lower the heat, add the rest of the oil and the sliced garlic for 30 seconds.','Add the drained beans with the lemon zest and juice and warm 2 minutes.','Stir in the spinach until wilted and return the chicken.'],
+ note:'Numbers are per serving of two. The recipe and numbers are my estimates.'},
+ {id:'d8',cat:'dinner',name:'Garlic shrimp with brown rice and broccoli',desc:'Garlicky seared shrimp with broccoli over brown rice.',src:'yours',kid:true,dish:'plate',time:'20 min with cooked rice · serves 2',kcal:490,p:48,c:49,f:13,colors:['#eef0ea','#e9a07a','#3f7d3a','#c9a26b','#f6f1ea'],
+ ing:['400 g raw peeled shrimp','300 g cooked brown rice','300 g broccoli florets','4 garlic cloves','4 tsp olive oil','1 tbsp low-sodium soy sauce','Salt and black pepper'],
+ steps:['Cook the brown rice, or heat ready-cooked rice.','Steam the broccoli 4 minutes.','Heat the oil in a skillet over medium-high, add the sliced garlic for 30 seconds, then the shrimp, 2 minutes a side until pink.','Add the soy sauce and toss in the broccoli.','Serve over the rice.'],
+ note:'Numbers are per serving of two. The recipe and numbers are my estimates.'}
 ];
-const FIBER={b4:18,b7:1,b5:9,b6:8,x3:2,d4:13,d5:4,d6:11,l1:10};
-const SERVES={l1:4,d5:2,x3:12};
+const FIBER={s5:2,d7:9,d8:7,b4:18,b7:1,b5:9,b6:8,x3:2,d4:13,d5:4,d6:11,l1:10};
+const SERVES={d7:2,d8:2,l1:4,d5:2,x3:12};
 BASE.forEach(m=>{m.fib=FIBER[m.id]||0;m.serves=SERVES[m.id]||1});
 const CATS=[{id:'breakfast',n:'Breakfast',suit:'var(--s1)',share:.3,pal:['#efe3d2','#f6f1ea','#d9a066','#c23a4b','#3f7d3a']},{id:'lunch',n:'Lunch',suit:'var(--s2)',share:.3,pal:['#e2ead6','#e8d4a6','#5f9e4c','#e0533d','#d9a066']},{id:'dinner',n:'Dinner',suit:'var(--s3)',share:.3,pal:['#dde3ea','#f08a5d','#e8c27a','#3f7d3a','#f4e04d']},{id:'snack',n:'Snacks',suit:'var(--s4)',share:.1,pal:['#f0e0d2','#c0392b','#f1e3c6','#8a5a3b','#7aa13a']},
  {id:'dessert',n:'Desserts',suit:'var(--s5)',share:0,opt:true,pal:['#efe1e6','#6b3f2c','#e9d6c4','#b5485d','#f3eadf']}]; // opt: no set share; counts against what's left, row shows only when locked
