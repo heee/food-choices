@@ -276,9 +276,14 @@ html.lk #toast{bottom:calc(var(--botm) + 160px)}
 .form input,.form select,textarea{font-size:16px;min-height:46px;border-radius:8px;border:1px solid var(--line);background:var(--soft);color:var(--ink);padding:8px 12px;width:100%}
 textarea{min-height:100px;font:15px/1.4 var(--fb)}
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-#toast{position:fixed;left:50%;bottom:calc(var(--botm) + 98px);transform:translateX(-50%);background:var(--toast);color:#f4f4ef;border-radius:12px;padding:11px 8px 11px 16px;display:flex;align-items:center;gap:6px;z-index:90;box-shadow:0 8px 24px rgba(0,0,0,.3);max-width:calc(100% - 32px);font-size:15px}
+/* toasts match the tab bar: same width, radius, glass and border; they sit one tab-bar gap above it */
+#toast{position:fixed;left:50%;bottom:calc(var(--botm) + 96px);transform:translateX(-50%);width:min(428px,calc(100% - 28px));box-sizing:border-box;min-height:52px;padding:6px 6px 6px 18px;display:flex;align-items:center;justify-content:space-between;gap:8px;z-index:90;border-radius:20px;background:var(--glass);-webkit-backdrop-filter:blur(14px) saturate(1.8);backdrop-filter:blur(14px) saturate(1.8);border:1px solid rgba(255,255,255,.55);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 6px 20px rgba(0,0,0,.08);color:var(--ink);font-size:15px;font-weight:500}
+#toastT{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html.lk #toast{background:rgba(38,40,38,.62);border-color:rgba(255,255,255,.1);box-shadow:0 8px 24px rgba(0,0,0,.25);color:#f6f6f1}
 #toast[hidden]{display:none}
-#toast button{border:0;background:none;color:var(--lacc);font-weight:600;min-height:32px;padding:0 10px}
+#toast button{flex:none;border:0;background:none;color:var(--s2);font-weight:600;font-size:15px;min-height:40px;padding:0 12px;border-radius:14px}
+#toast button:active{background:var(--tabon)}
+html.lk #toast button{color:#cfe0c8}
 #toast:not(.has) button{display:none}
 @media(prefers-reduced-motion:reduce){.flip,.bar i{transition:none}}
 </style>
