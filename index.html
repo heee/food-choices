@@ -91,8 +91,6 @@ button,[role=button]{cursor:pointer}
 .calk i{width:4px;height:4px;border-radius:50%;background:var(--acc)}
 .meal{display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:14px;align-items:center;padding:11px 2px;border-bottom:1px dotted color-mix(in srgb,var(--line) 75%,transparent);border-radius:4px;outline-offset:2px}
 .meal:last-child{border-bottom:0}
-.addopt{display:flex;align-items:center;gap:10px;min-height:44px;margin-top:2px;padding:0 2px 0 40px;border:0;background:none;color:var(--mute);font-size:14px;font-weight:500}
-.addopt svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round}
 .ico{width:24px;height:24px;display:grid;place-items:center;color:var(--suit)}
 .ico svg{width:20px;height:20px;overflow:visible}
 .ico svg *{fill:none;stroke:currentColor;stroke-width:calc(var(--isw) * .78);stroke-linecap:round;stroke-linejoin:round}
@@ -508,10 +506,10 @@ function calSheet(k){
   })}
 function renderToday(){
   $('#dlt').textContent=dayLabel(st.day);$('#dprev').disabled=st.day<=MIN_DAY();
-  $('#meals').innerHTML=CATS.filter(c=>!c.opt||locked(c.id)).map(c=>{const e=locked(c.id),m=e&&byId(e.id),bud=Math.round(st.targets.kcal*c.share),kc=m?m.kcal:0;
+  $('#meals').innerHTML=CATS.map(c=>{const e=locked(c.id),m=e&&byId(e.id),bud=Math.round(st.targets.kcal*c.share),kc=m?m.kcal:0;
     return `<div class="meal" role="button" tabindex="0" data-slot="${c.id}" style="--suit:${c.suit}" aria-label="${c.n}: ${m?esc(m.name):'nothing chosen'}. Open choices">`+
      `<span class="ico">${suit(c.id)}</span><div class="mt"><b>${c.n}</b><span class="kc${!c.opt&&kc>bud?' over':''}">${c.opt?`${kc} kcal`:`${kc} / ${nf(bud)} kcal`}</span>${m?`<span class="mn">${esc(m.name)}</span>`:''}${m&&e.rep>1?`<span class="rp">Day ${e.i} of ${e.rep}</span>`:''}</div>`+
-     `<div class="thumb">${m?rowCard(m):`<div class="emptyc"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>`}</div></div>`}).join('')+CATS.filter(c=>c.opt&&!locked(c.id)).map(c=>`<button class="addopt" data-slot="${c.id}" style="--suit:${c.suit}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Add ${c.id}</button>`).join('');
+     `<div class="thumb">${m?rowCard(m):`<div class="emptyc"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>`}</div></div>`}).join('');
 }
 function libStuck(){const h=$('#libhead'),on=st.view==='library'&&!!h&&scrollY>0&&h.getBoundingClientRect().top<=parseFloat(getComputedStyle(h).top||0)+.5;h&&h.classList.toggle('stuck',on);document.documentElement.classList.toggle('stuck',on)}
 addEventListener('scroll',()=>{libStuck();setTheme()},{passive:true});addEventListener('resize',libStuck);
