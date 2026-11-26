@@ -278,6 +278,7 @@ html.lk #toast{bottom:calc(var(--botm) + 160px)}
 .form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .form .wide{grid-column:1/-1}
 .form label{display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--mute)}
+.tokrow{display:flex;align-items:center;gap:6px}.tokrow input{flex:1;min-width:0}.tokrow .ibtn{flex:none;color:var(--ink)}
 .form .ck{flex-direction:row;align-items:center;gap:10px;min-height:44px;color:var(--ink)}
 .form .ck input{width:22px;height:22px;min-height:0;accent-color:var(--pri)}
 .form input,.form select,textarea{font-size:16px;min-height:46px;border-radius:8px;border:1px solid var(--line);background:var(--soft);color:var(--ink);padding:8px 12px;width:100%}
@@ -639,7 +640,7 @@ function todoSheet(){
     return `<label class="wide">Project<select id="tdProj">${ps.map(p=>`<option value="${esc(p.id)}"${p.id===pid?' selected':''}>${esc(p.name)}</option>`).join('')}</select></label>`+
      `<label class="wide">Section<select id="tdSec"><option value="">None</option>${ss.map(x=>`<option value="${esc(x.id)}"${x.id===td.section_id?' selected':''}>${esc(x.name)}</option>`).join('')}</select></label>`};
   const body=()=>td.token?`<h2>Todoist</h2><form class="form" id="tdf" onsubmit="return false"><label class="wide">API token<input value="${esc(mask(td.token))}" disabled></label><div class="wide" id="tdSel">${sel()}</div></form><div class="row"><button class="btn" data-tdrm>Remove token</button><button class="btn pri" data-close>Done</button></div>`
-    :`<h2>Todoist</h2><form class="form" id="tdf" onsubmit="return false"><label class="wide">API token<input id="tdTok" type="password" autocomplete="off" autocapitalize="off" spellcheck="false"></label></form><div class="row"><button class="btn" data-close>Cancel</button><button class="btn pri" data-tdsave>Save</button></div>`;
+    :`<h2>Todoist</h2><form class="form" id="tdf" onsubmit="return false"><label class="wide">API token<span class="tokrow"><input id="tdTok" type="password" autocomplete="off" autocapitalize="off" spellcheck="false"><a class="ibtn" id="tdGet" href="https://app.todoist.com/app/settings/integrations/developer" target="_blank" rel="noopener noreferrer" aria-label="Get your Todoist API token" title="Get your Todoist API token"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a></span></label></form><div class="row"><button class="btn" data-close>Cancel</button><button class="btn pri" data-tdsave>Save</button></div>`;
   const pick=()=>{const p=$('#tdProj'),x=$('#tdSec');if(!p||!tdMeta)return;const pr=tdMeta.projects.find(q=>q.id===p.value);td.project_id=p.value;td.project_name=pr?pr.name:'';
     const sx=x&&tdMeta.sections.find(q=>q.id===x.value&&q.project_id===p.value);td.section_id=sx?sx.id:'';td.section_name=sx?sx.name:'';tdSave()};
   const meta=()=>{if(!td.token)return;tdLoadMeta().then(()=>{if(td.bad){delete td.bad;tdSave()}if($('#tdSel')){$('#tdSel').innerHTML=sel();pick()}}).catch(e=>{const m=$('#tdMsg'),bad=e&&(e.status===401||e.status===403);if(bad){td.bad=true;tdSave()}if(m)m.textContent=bad?"Todoist didn't accept this token.":"Couldn't reach Todoist."})};
