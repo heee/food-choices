@@ -272,6 +272,7 @@ html.lk #toast{bottom:calc(var(--botm) + 160px)}
 .item .snt{flex:none;display:grid;place-items:center;margin-left:4px;color:var(--mute)}
 .item em+.snt{margin-left:4px}
 .item span+.snt{margin-left:auto}
+.item span{flex:1}.item .stp{flex:none;display:grid;place-items:center;width:32px;height:32px;margin:0 -6px 0 0;padding:0;border:0;background:none;color:var(--mute);opacity:.4;cursor:pointer}.item .stp[aria-pressed=true]{color:var(--pri);opacity:1}.item .stp svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 .item .snt svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 .ibtn svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 .row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:14px}
@@ -470,7 +471,7 @@ st.targets=Object.assign({},DEF,st.targets||{});
 if(!st.day||st.day<add(today,-7))st.day=today;
 st.view=['today','library','shopping','progress'].includes(st.view)?st.view:'today';
 if(!Array.isArray(st.libcats)){const f=st.libf||'all';st.libcats=CATS.some(c=>c.id===f)?[f]:[];st.libkid=f==='kid';st.libsaved=f==='src:saved'}delete st.libf; // Library filter: chosen categories (none = all), plus kid-friendly and saved toggles
-st.shopDays=st.shopDays||7;st.checked=st.checked||{};
+st.shopDays=st.shopDays||7;st.checked=st.checked||{};st.staples=st.staples||{};
 let photos=load(KP)||{};
 let custom=(load(KC)||[]).filter(m=>m&&typeof m.id==='string'&&/^u\d+$/.test(m.id)&&CATS.some(c=>c.id===m.cat));
 custom.forEach(m=>{m.custom=true;m.src='yours';m.serves=1;['kcal','p','c','f','fib'].forEach(k=>m[k]=num(m[k],5000));m.ing=Array.isArray(m.ing)?m.ing.map(String):[];m.steps=Array.isArray(m.steps)?m.steps.map(String):[];m.colors=cat(m.cat).pal;m.dish='plate';m.time=m.time||'Your recipe'});
@@ -583,13 +584,24 @@ function renderShopping(){
   $('#shopddm').innerHTML=R.map(([n,t])=>`<button class="rd" role="menuitemradio" aria-checked="${st.shopDays===n}" data-shopd="${n}">${ck}${t}</button>`).join('');
   const G=shopData();
   const from=fmt(st.day,{weekday:'short',month:'short',day:'numeric'}),to=fmt(add(st.day,st.shopDays-1),{weekday:'short',month:'short',day:'numeric'});
-  const left=G.reduce((a,g)=>a+g.m.ing.filter((_,j)=>!st.checked[g.m.id+'|'+j]).length,0);
-  $('#shopsum').textContent=G.length?`${st.shopDays>1?from+' to '+to:from}: ${G.length} meal${G.length>1?'s':''}, ${left} item${left===1?'':'s'} to buy.`:`Nothing locked in for ${st.shopDays>1?from+' to '+to:from} yet.`;
+  const left=G.reduce((a,g)=>a+g.m.ing.filter((x,j)=>!isDone(g.m.id+'|'+j,x)).length,0),sc=G.some(g=>g.m.ing.some(isStaple));
+  $('#shopsum').textContent=G.length?`${st.shopDays>1?from+' to '+to:from}: ${G.length} meal${G.length>1?'s':''}, ${left} item${left===1?'':'s'} to buy.${sc?' Pantry staples start ticked.':''}`:`Nothing locked in for ${st.shopDays>1?from+' to '+to:from} yet.`;
   $('#shoplist').innerHTML=G.length?G.map(g=>{const m=g.m,sv=g.days.length;
     const note=m.serves>1?`${sv} serving${sv>1?'s':''} planned; the recipe makes ${m.serves}${g.batches>1?`, so cook it ${g.batches} times`:''}`:`${sv} serving${sv>1?'s':''} planned`;
-    return `<div class="sgroup" style="--suit:${cat(m.cat).suit}"><h3>${esc(m.name)}</h3><p>${note}</p>${m.ing.map((x,j)=>{const key=m.id+'|'+j,done=!!st.checked[key],mult=m.serves>1?g.batches:sv;
-      return `<label class="item${done?' done':''}"><input type="checkbox" data-ck="${esc(key)}"${done?' checked':''}><span>${esc(x)}</span>${mult>1?`<em>×${mult}</em>`:''}${st.sent&&st.sent[key]===mult?`<i class="snt" title="In Todoist" aria-label="In Todoist"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5L10.2 13.8"/><path d="M20.5 3.5l-6.3 17-4-6.7-6.7-4z"/></svg></i>`:''}</label>`}).join('')}</div>`}).join(''):'<p class="empty">Lock meals in on Today and their ingredients land here.</p>';
+    return `<div class="sgroup" style="--suit:${cat(m.cat).suit}"><h3>${esc(m.name)}</h3><p>${note}</p>${m.ing.map((x,j)=>{const key=m.id+'|'+j,done=isDone(key,x),stp=isStaple(x),mult=m.serves>1?g.batches:sv;
+      return `<label class="item${done?' done':''}"><input type="checkbox" data-ck="${esc(key)}"${done?' checked':''}><span>${esc(x)}</span>${mult>1?`<em>×${mult}</em>`:''}${st.sent&&st.sent[key]===mult?`<i class="snt" title="In Todoist" aria-label="In Todoist"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5L10.2 13.8"/><path d="M20.5 3.5l-6.3 17-4-6.7-6.7-4z"/></svg></i>`:''}<button type="button" class="stp" data-stp="${esc(key)}" aria-pressed="${stp}" aria-label="Pantry staple" title="${stp?'Pantry staple: tap to unmark':'Mark as pantry staple'}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 3h7v3h-7z"/><path d="M7.5 6h9a1.5 1.5 0 0 1 1.5 1.5V19a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V7.5A1.5 1.5 0 0 1 7.5 6z"/><path d="M6 11h12M6 16h12"/></svg></button></label>`}).join('')}</div>`}).join(''):'<p class="empty">Lock meals in on Today and their ingredients land here.</p>';
 }
+/* Pantry staples start ticked on the Shopping list, so Todoist skips them. A staple is keyed by the ingredient's name without
+   amounts or notes ("1 tbsp olive oil" -> "olive oil"); st.staples holds Henning's own marks over the defaults below. A tick he
+   sets by hand is stored only where it differs from that default, so marking or unmarking a staple moves every untouched row. */
+const STAPLE=/\bsalt\b|black pepper|^pepper$|and pepper|\boil\b|vinegar|soy sauce|gochujang|honey|maple syrup|vanilla|baking (powder|soda)|cinnamon|oregano|cumin|paprika|chili (powder|flake)|garlic powder|bagel seasoning|\bchia\b|cocoa|flaxseed|tomato paste|^water$/;
+const UNIT='(?:tbsp|tsp|cups?|g|kg|oz|lb|ml|l|scoops?|slices?|cans?|pinch(?:es)?|handful|few)';
+function stapleName(x){let s=String(x).toLowerCase().replace(/\([^)]*\)/g,' ').split(',')[0];
+  s=s.replace(new RegExp('^\\s*(?:(?:a|an|of|[\\d./]+%?(?:\\s*-\\s*[\\d./]+%?)?|'+UNIT+')(?!\\w)\\s*)+'),'');
+  return s.replace(/\s+/g,' ').trim().replace(/(\w{2,})ies$/,'$1y').replace(/(\w{2,})(?<!ss)oes$/,'$1o').replace(/(\w{2,}[^s])s$/,'$1')}
+function isStaple(x){const n=stapleName(x);return Object.prototype.hasOwnProperty.call(st.staples,n)?!!st.staples[n]:STAPLE.test(n)}
+function isDone(key,x){return Object.prototype.hasOwnProperty.call(st.checked,key)?!!st.checked[key]:isStaple(x)}
+function ingOf(key){const i=key.lastIndexOf('|'),m=byId(key.slice(0,i));return m?m.ing[+key.slice(i+1)]:undefined}
 /* H-E-B Buffalo Heights aisle codes, as Henning files groceries in Todoist. First match wins, so specific rules sit above
    general ones (peanut butter before butter, canned chicken before chicken). Add a row to extend; no match means no code. */
 const AISLE=[
@@ -609,7 +621,7 @@ const AISLE=[
  ['A00',/flower/]];
 function aisleOf(x){x=String(x).toLowerCase();const r=AISLE.find(a=>a[1].test(x));return r?r[0]:''}
 function aisleRank(c){return !c?3e3:c==='Back'?1e3:c==='Frozen'?2e3:+c.slice(1)}
-function todoItems(){const out=[];shopData().forEach(g=>{const m=g.m,mult=m.serves>1?g.batches:g.days.length;m.ing.forEach((x,j)=>{const key=m.id+'|'+j,a=aisleOf(x);if(!st.checked[key])out.push({key,mult,a,text:`${a?a+' ':''}${x}${mult>1?' ×'+mult:''} (${m.name})`})})});
+function todoItems(){const out=[];shopData().forEach(g=>{const m=g.m,mult=m.serves>1?g.batches:g.days.length;m.ing.forEach((x,j)=>{const key=m.id+'|'+j,a=aisleOf(x);if(!isDone(key,x))out.push({key,mult,a,text:`${a?a+' ':''}${x}${mult>1?' ×'+mult:''} (${m.name})`})})});
   return out.map((x,i)=>[x,i]).sort((p,q)=>aisleRank(p[0].a)-aisleRank(q[0].a)||p[1]-q[1]).map(p=>p[0])}
 function todoText(){return todoItems().map(x=>x.text).join('\n')}
 function renderProgress(){
@@ -885,6 +897,7 @@ document.addEventListener('click',e=>{
   const dw=e.target.closest('.ddw');if(!dw)closeMenus();
   if(e.target.closest('#sheet,#lift'))return;
   let b;
+  if(b=e.target.closest('[data-stp]')){e.preventDefault();const x=ingOf(b.dataset.stp);if(x===undefined)return;const n=stapleName(x),v=!isStaple(x);st.staples[n]=v;if(v===STAPLE.test(n))delete st.staples[n];renderAll();toast(v?`${n[0].toUpperCase()+n.slice(1)} is a pantry staple now`:`${n[0].toUpperCase()+n.slice(1)} is back on the list`);return}
   if(b=e.target.closest('[data-view]')){if(L.open)closeLift(false);st.view=b.dataset.view;renderAll();scrollTo(0,0)}
   else if(b=e.target.closest('[data-slot]'))openLift(b.dataset.slot);
   else if(b=e.target.closest('[data-lib]')){const m=byId(b.dataset.lib);if(m)openLift(st.libcats.find(c=>inCat(m,c))||m.cat,m.id,b.querySelector('.cw'))}
@@ -903,7 +916,7 @@ document.addEventListener('click',e=>{
   else if(e.target.closest('#todoSet'))todoSheet();
   else if(e.target.closest('#scrim'))closeSheet();
 });
-document.addEventListener('change',e=>{const k=e.target.dataset&&e.target.dataset.ck;if(!k)return;if(e.target.checked)st.checked[k]=true;else delete st.checked[k];renderAll()});
+document.addEventListener('change',e=>{const k=e.target.dataset&&e.target.dataset.ck;if(!k)return;const v=e.target.checked;if(v===isStaple(ingOf(k)))delete st.checked[k];else st.checked[k]=v;renderAll()});
 $('#scrim').onclick=closeSheet;
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){const o=[...document.querySelectorAll('.ddm')].find(m=>!m.hidden);if(o){closeMenus();$('#'+o.id.slice(0,-1)).focus();return}}
