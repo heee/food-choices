@@ -405,6 +405,10 @@ const BASE=[
  ing:['4 oz 93% lean ground turkey','200 g sweet potato, cut in cubes','1 tsp olive oil','1/2 tsp smoked paprika','1/4 tsp chili powder','1/2 tsp ground cumin','1/4 tsp garlic powder','Salt and pepper','150 g 2% cottage cheese','1 tsp honey','1/2 avocado, cubed'],
  steps:['Heat the oven to 425°F.','Toss the sweet potato with the oil, paprika, chili powder and a pinch of salt, then roast 25 to 30 minutes, turning once, until browned.','Brown the turkey in a skillet over medium-high heat with the cumin, garlic powder, salt and pepper, about 8 minutes.','Plate the sweet potato and turkey with the cottage cheese drizzled with honey and the avocado.'],
  note:'Saved from an Instagram post that had no recipe. The recipe and all the numbers are my estimates.'},
+ {id:'x4',cat:'dessert',name:'Chocolate protein chia pudding',desc:'Chia, cocoa and protein powder, set overnight in the fridge.',src:'yours',kid:true,dish:'bowl',time:'5 min + overnight · serves 1',kcal:330,p:30,c:27,f:13,colors:['#f3ece4','#5a3a2a','#8a5a44','#d6334f','#efe3d2'],
+ ing:['3 tbsp chia seeds (30 g)','1 cup unsweetened almond milk','1 scoop chocolate protein powder (30 g)','1 tbsp unsweetened cocoa powder','1 tsp honey','Pinch of salt','A few raspberries'],
+ steps:['Whisk everything but the raspberries in a jar.','Rest 5 minutes, then whisk again.','Chill overnight.','Top with raspberries before serving.'],
+ note:'The recipe and numbers are my estimates.'},
  {id:'s5',cat:'snack',name:'Savory cottage cheese bowl',desc:'Cottage cheese topped with cherry tomatoes, cucumber and everything seasoning.',src:'yours',img:IMG_S5,thumb:IMG_S5_SQ,kid:false,dish:'bowl',time:'5 min · serves 1',kcal:220,p:25,c:15,f:5,colors:['#f6f1ea','#e0533d','#5f9e4c','#efe3d2','#d9a066'],
  ing:['1 cup (225 g) 2% cottage cheese','100 g cherry tomatoes','1/2 cucumber (about 100 g)','1 tsp everything bagel seasoning','Black pepper'],
  steps:['Spoon the cottage cheese into a bowl.','Halve the tomatoes and dice the cucumber, then pile them on top.','Sprinkle with the seasoning and pepper.'],
@@ -430,7 +434,7 @@ const BASE=[
  steps:['Heat the oven to 425°F.','Halve the potatoes, toss with half the oil, salt and pepper, and roast 15 minutes.','Add the green beans and salmon to the tray, brush with the rest of the oil, season, and lay lemon slices on the salmon.','Roast 10 to 12 minutes until the salmon flakes.','Squeeze the remaining lemon over before serving.'],
  note:'Numbers are per serving of two. The recipe and numbers are my estimates.'}
 ];
-const FIBER={s6:6,l2:9,d9:8,s5:2,d7:9,d8:7,b4:18,b7:1,b5:9,b6:8,x3:2,d4:13,d5:4,d6:11,l1:10};
+const FIBER={x4:12,s6:6,l2:9,d9:8,s5:2,d7:9,d8:7,b4:18,b7:1,b5:9,b6:8,x3:2,d4:13,d5:4,d6:11,l1:10};
 const SERVES={d9:2,d7:2,d8:2,l1:4,d5:2,x3:12};
 BASE.forEach(m=>{m.fib=FIBER[m.id]||0;m.serves=SERVES[m.id]||1});
 const CATS=[{id:'breakfast',n:'Breakfast',suit:'var(--s1)',share:.3,pal:['#efe3d2','#f6f1ea','#d9a066','#c23a4b','#3f7d3a']},{id:'lunch',n:'Lunch',suit:'var(--s2)',share:.3,pal:['#e2ead6','#e8d4a6','#5f9e4c','#e0533d','#d9a066']},{id:'dinner',n:'Dinner',suit:'var(--s3)',share:.3,pal:['#dde3ea','#f08a5d','#e8c27a','#3f7d3a','#f4e04d']},{id:'snack',n:'Snacks',suit:'var(--s4)',share:.1,pal:['#f0e0d2','#c0392b','#f1e3c6','#8a5a3b','#7aa13a']},
